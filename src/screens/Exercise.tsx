@@ -20,7 +20,7 @@ export function Exercise() {
 
   return (
     <VStack flex={1}>
-      <ScrollView>
+      
               
       <VStack px={8} bg="gray.600" pt={12}>
         <TouchableOpacity onPress={handleGoBack}>
@@ -46,8 +46,9 @@ export function Exercise() {
           </HStack>
         </HStack>
       </VStack>
-
+      <ScrollView>
       <VStack p={8}>
+
         <Image
           w="full"
           h={80}
