@@ -4,7 +4,7 @@ import { AuthRoutes } from "./auth.routes";
 import { Box, useTheme } from "native-base";
 import { AppRoutes } from "./app.routes";
 import { useContext } from "react";
-import { AuthContext } from "src/context/AuthContext";
+import { AuthContext } from "@contexts/AuthContext";
 
 export function Routes() {
     const contextData = useContext(AuthContext);
