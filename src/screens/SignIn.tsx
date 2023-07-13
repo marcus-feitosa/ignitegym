@@ -1,4 +1,4 @@
-import { VStack, Image, Text, Center, Heading, ScrollView } from "native-base";
+import { VStack, Image, Text, Center, Heading, ScrollView, useToast } from "native-base";
 
 import BackgroundImg from "@assets/background.png";
 import LogoSvg from "@assets/logo.svg";
@@ -6,9 +6,12 @@ import LogoSvg from "@assets/logo.svg";
 import { Input } from "@components/Input";
 import { Button } from "@components/Button";
 import { useNavigation } from "@react-navigation/native";
+import { useState } from 'react';
 import { AuthNavigatorRoutesProps } from "@routes/auth.routes";
 import { Controller, useForm } from "react-hook-form";
 import { useAuth } from "@hooks/useAuth";
+
+import { AppError } from '@utils/AppError';
 
 type FormData = {
   email: string;
@@ -18,18 +21,36 @@ type FormData = {
 export function SignIn() {
   const { singIn } = useAuth();
   const navigation = useNavigation<AuthNavigatorRoutesProps>();
+  const [isLoading, setIsLoading] = useState(false)
+
   const {
     control,
     handleSubmit,
     formState: { errors },
   } = useForm<FormData>();
 
+  const toast = useToast();
+
   function handleNewAccount() {
     navigation.navigate("signUp");
   }
 
-  function handleSignIn({ email, password }: FormData) {
-    singIn(email, password);
+  async function handleSignIn({ email, password }: FormData) {
+    try {
+      setIsLoading(true);
+      await singIn(email, password);
+    } catch (error) {
+      const isAppError = error instanceof AppError;
+
+      const title =  isAppError ? error.message : 'Não foi possível entrar. Tente novamente mais tarde.'
+
+      toast.show({
+        title,
+        placement: 'top',
+        bgColor: 'red.500'
+      })
+      setIsLoading(false);
+    }
   }
   return (
     <ScrollView
@@ -86,7 +107,11 @@ export function SignIn() {
           )}
         />
 
-        <Button title="Acessar" onPress={handleSubmit(handleSignIn)} />
+          <Button 
+            title="Acessar" 
+            onPress={handleSubmit(handleSignIn)} 
+            isLoading={isLoading}
+          />
 
         <Center mt={24}>
           <Text color="gray.100" fontSize="sm" mb={3} fontFamily="body">
