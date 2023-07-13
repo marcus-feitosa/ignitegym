@@ -3,18 +3,18 @@ import { VStack, Image, Text, Center, Heading, ScrollView, useToast } from "nati
 import LogoSvg from '@assets/logo.svg';
 import BackgroundImg from '@assets/background.png';
 
-import { Input } from "@components/Input";
-import { Button } from "@components/Button";
+import { yupResolver } from '@hookform/resolvers/yup';
 import { useNavigation } from "@react-navigation/native";
+
 import { Controller, useForm } from "react-hook-form";
 
-import * as yup from 'yup';
-import { yupResolver } from '@hookform/resolvers/yup';
 
-import axios from 'axios'
 import { api } from "@services/api";
-import { Alert } from "react-native";
-import { AppError } from "utils/AppError";
+import { Input } from "@components/Input";
+import { Button } from "@components/Button";
+import { AppError } from "@utils/AppError";
+
+import * as yup from 'yup';
 
 type FormDataProps = {
   name: string;
