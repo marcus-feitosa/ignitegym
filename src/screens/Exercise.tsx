@@ -1,25 +1,32 @@
+import { useEffect, useState } from 'react';
 import { TouchableOpacity } from 'react-native';
-import { Box, Heading, HStack, Icon, Image, Text, VStack, ScrollView, useToast } from 'native-base';
+import { Box, Heading, HStack, Icon, Image, Text, useToast, VStack } from 'native-base';
 import { Feather } from '@expo/vector-icons';
 import { useNavigation, useRoute } from '@react-navigation/native';
 
 import { AppNavigatorRoutesProps } from '@routes/app.routes';
 
+import { api } from '@services/api';
+import { AppError } from '@utils/AppError';
+import { ExerciseDTO } from '@dtos/ExerciseDTO';
+
 import BodySvg from '@assets/body.svg';
 import SeriesSvg from '@assets/series.svg';
 import RepetitionsSvg from '@assets/repetitions.svg';
+
 import { Button } from '@components/Button';
-import { ExerciseDTO } from '@dtos/ExerciseDTO';
-import { useEffect, useState } from 'react';
-import { api } from '@services/api';
-import { AppError } from '@utils/AppError';
+import { Loading } from '@components/Loading';
+
 
 type RouteParamsProps = {
   exerciseId: string;
 }
+
 export function Exercise() {
+  const [isLoading, setIsLoading] = useState(false);
   const [exercise, setExercise] = useState<ExerciseDTO>({} as ExerciseDTO);
   const navigation = useNavigation<AppNavigatorRoutesProps>();
+
   const route = useRoute();
   const toast = useToast();
 
@@ -31,6 +38,7 @@ export function Exercise() {
 
   async function fetchExerciseDetails() {
     try {
+      setIsLoading(true);
       const response = await api.get(`/exercises/${exerciseId}`);
 
       setExercise(response.data);
@@ -44,6 +52,8 @@ export function Exercise() {
         placement: 'top',
         bgColor: 'red.500'
       })
+    }finally {
+      setIsLoading(false);
     }
   }
 
@@ -53,8 +63,6 @@ export function Exercise() {
 
   return (
     <VStack flex={1}>
-      
-              
       <VStack px={8} bg="gray.600" pt={12}>
         <TouchableOpacity onPress={handleGoBack}>
           <Icon 
@@ -66,7 +74,7 @@ export function Exercise() {
         </TouchableOpacity>
 
         <HStack justifyContent="space-between" mt={4} mb={8} alignItems="center">
-          <Heading color="gray.100" fontSize="lg" fontFamily="heading" flexShrink={1}>
+          <Heading color="gray.100" fontSize="lg"  flexShrink={1} fontFamily="heading">
             {exercise.name}
           </Heading>
 
@@ -79,10 +87,10 @@ export function Exercise() {
           </HStack>
         </HStack>
       </VStack>
-      <ScrollView>
-      <VStack p={8}>
 
-      <Box rounded="lg" mb={3} overflow="hidden">
+      {isLoading ? <Loading /> :
+      <VStack p={8}>
+        <Box rounded="lg" mb={3} overflow="hidden">
           <Image
             w="full"
             h={80}
@@ -117,7 +125,7 @@ export function Exercise() {
           />
         </Box>
       </VStack>
-      </ScrollView>
+    }
     </VStack>
   );
 }
